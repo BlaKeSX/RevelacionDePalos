@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Cartas: Revelación de Palos</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <h1>Revelación de Palos</h1>
+    <div class="game-container">
+        <div class="player" id="player1"> <!-- Jugador 1 a la izquierda -->
+            <h2>Jugador 1</h2>
+            <p>Vida: <span id="vida1">20</span></p>
+            <p>Cartas en baraja: <span id="baraja1Count">52</span></p>
+            <div id="zona-jugador1" class="zona-jugador">
+                <div class="fila-campo">
+                    <div id="cementerio1" class="cementerio clickable"></div>
+                    <div id="campo1-ataque" class="campo-row"></div>
+                </div>
+                <div class="fila-campo">
+                    <div style="width:60px"></div>
+                    <div id="campo1-apoyo" class="campo-row"></div>
+                </div>
+                <div id="mano1" class="mano"></div>
+            </div>
+        </div>
+        <div class="acciones">
+            <p id="turnoInfo">Turno: Jugador 1</p>
+            <div id="faseInfo"></div>
+            <button id="siguienteFaseBtn">Siguiente Fase</button>
+            <button id="pasarTurnoBtn">Pasar turno</button>
+            <div id="sacrificioArea"></div>
+            <div id="mensaje"></div>
+        </div>
+        <div class="player" id="player2"> <!-- Jugador 2 a la derecha -->
+            <h2>Jugador 2</h2>
+            <p>Vida: <span id="vida2">20</span></p>
+            <p>Cartas en baraja: <span id="baraja2Count">52</span></p>
+            <div id="zona-jugador2" class="zona-jugador">
+                <div class="fila-campo">
+                    <div id="cementerio2" class="cementerio clickable"></div>
+                    <div id="campo2-ataque" class="campo-row"></div>
+                </div>
+                <div class="fila-campo">
+                    <div style="width:60px"></div>
+                    <div id="campo2-apoyo" class="campo-row"></div>
+                </div>
+                <div id="mano2" class="mano"></div>
+            </div>
+        </div>
+    </div>
+    <div id="cementerio-modal" class="modal-cementerio" style="display:none;">
+      <div class="cementerio-lista" id="cementerio-lista"></div>
+      <button onclick="cerrarCementerio()">Cerrar</button>
+    </div>
+    <div id="fondo-oscuro" class="fondo-oscuro" style="display:none;"></div>
+    <script src="script.js"></script>
+</body>
+</html>
