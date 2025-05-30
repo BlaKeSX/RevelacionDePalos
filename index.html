@@ -55,6 +55,13 @@
       <button onclick="cerrarCementerio()">Cerrar</button>
     </div>
     <div id="fondo-oscuro" class="fondo-oscuro" style="display:none;"></div>
+    <!-- Modal para mostrar efecto de carta -->
+    <div id="modal-carta" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; background:#000a; align-items:center; justify-content:center;">
+      <div style="background:#23272f; color:#fff; border-radius:12px; max-width:90vw; padding:18px 16px; box-shadow:0 4px 24px #000a; text-align:center;">
+        <div id="modal-carta-contenido"></div>
+        <button onclick="cerrarModalCarta()" style="margin-top:14px; padding:6px 18px; border-radius:8px; background:#00bfff; color:#fff; border:none;">Cerrar</button>
+      </div>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>

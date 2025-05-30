@@ -629,22 +629,24 @@ function realizarAtaque(idx) {
 function ataqueEspada(jugador, oponente, carta, ataque, defensaForzada) {
     // Redirigir ataque si corresponde
     if(oponente.redirigirProxAtaque) {
-        oponente.redirigirProxAtaque = false;
         let defensas = oponente.campo.filter(c=>c.palo==="Corazones");
         if(defensas.length > 1 && !oponente.esIA) {
             mostrarMensaje("Selecciona a qué carta de defensa redirigir el ataque.");
-            let areaCampo = document.getElementById(turno === 1 ? "campo2" : "campo1");
+            let areaCampo = document.getElementById(turno === 1 ? "campo2-ataque" : "campo1-ataque");
             areaCampo.childNodes.forEach((el,idx)=>{
-                let cartaCampo = oponente.campo[idx];
-                if(cartaCampo && cartaCampo.palo==="Corazones") {
+                let cartaCampo = oponente.campo.filter(c=>c.palo==="Corazones")[idx];
+                if(cartaCampo) {
                     el.classList.add("invocable");
                     el.onclick = () => {
                         areaCampo.childNodes.forEach(e => { e.onclick = null; e.classList.remove("invocable"); });
-                        ataqueEspada(jugador, oponente, carta, ataque, defensaJ);
+                        oponente.redirigirProxAtaque = false; // <-- Resetea aquí
+                        ataqueEspada(jugador, oponente, carta, ataque, cartaCampo);
                     };
                 }
             });
             return;
+        } else {
+            oponente.redirigirProxAtaque = false; // <-- Resetea si no hay opción
         }
     }
 
@@ -771,6 +773,10 @@ function mostrarCementerioModal(jugador) {
 function cerrarCementerio() {
     document.getElementById("cementerio-modal").style.display = "none";
     document.getElementById("fondo-oscuro").style.display = "none";
+}
+
+function cerrarModalCarta() {
+    document.getElementById("modal-carta").style.display = "none";
 }
 
 function iaInvocacion() {
@@ -1233,6 +1239,38 @@ function forzarDefensa(jugador, oponente, carta, ataque) {
             }
         });
         // Aquí puedes agregar lógica para activar tréboles rápidos si lo deseas
+    }
+}
+
+function mostrarModalCarta(carta) {
+    let contenido = `<div style="font-size:1.5em;margin-bottom:8px;">${carta.simbolo} ${carta.valor} <span style="font-size:0.7em;">(${carta.palo})</span></div>`;
+    if (carta.efecto && carta.efecto.length > 0) {
+        contenido += `<div style="margin-bottom:8px;">${carta.efecto}</div>`;
+    }
+    if (carta.valorOriginal) {
+        contenido += `<div style="color:#ffb347;">Valor original: ${carta.valorOriginal}</div>`;
+    }
+    document.getElementById("modal-carta-contenido").innerHTML = contenido;
+    document.getElementById("modal-carta").style.display = "flex";
+}
+
+function ajustarPosicionModal(modal) {
+    let pantallaAltura = window.innerHeight;
+    let modalAltura = modal.offsetHeight;
+    let desplazamiento = 20; // Ajuste para centrar mejor
+    if (modalAltura > pantallaAltura - 40) {
+        // Si el modal es más alto que la pantalla, ajustar a la parte superior
+        modal.style.top = "10px";
+    } else {
+        // Centrar verticalmente
+        modal.style.top = `calc(50% - ${modalAltura/2}px - ${desplazamiento}px)`;
+    }
+}
+
+window.onclick = function(event) {
+    let modal = document.getElementById("modal-carta");
+    if (event.target == modal) {
+        modal.style.display = "none";
     }
 }
 
