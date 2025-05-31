@@ -248,8 +248,6 @@ function actualizarUI() {
     mostrarManos();
     mostrarCampo();
     mostrarCementerio();
-    // NO borres el mensaje aquí:
-    // document.getElementById("mensaje").textContent = "";
     document.getElementById("sacrificioArea").innerHTML = "";
 }
 
@@ -262,17 +260,14 @@ function mostrarManos() {
             let el = document.createElement("div");
             el.className = "carta";
             if ((turno === i+1 && !jugador.esIA) || (i === 0 && !jugador2.esIA)) {
-                // Mostrar cartas solo si es tu mano
                 el.textContent = `${carta.simbolo} ${carta.valor}`;
                 if (carta.efecto) el.title = carta.efecto;
-                if(turno===i+1 && fase===1 && !jugador.esIA) {
-                    el.classList.add("invocable");
-                    el.onclick = ()=>prepararInvocacion(idx);
-                }
+                el.classList.add("invocable"); // borde azul
+                el.onclick = () => mostrarModalCartaMano(carta, idx, jugador);
             } else {
-                // Ocultar cartas del oponente
                 el.textContent = "🂠";
                 el.title = "";
+                el.onclick = ()=>mostrarModalCarta(carta);
             }
             cont.appendChild(el);
         });
@@ -299,7 +294,14 @@ function mostrarCampo() {
             if(turno === jIndex+1 && fase === 2 && !jugador.esIA && (carta.palo === "Tréboles" || carta.palo === "Diamantes")) {
                 el.classList.add("invocable");
                 el.onclick = ()=>activarEfectoCampo(idx);
+            } else if(turno === jIndex+1 && fase === 3 && !jugador.esIA && carta.palo === "Espadas" && !carta.yaAtaco) {
+                // Permitir atacar
+                el.classList.add("invocable");
+                el.onclick = ()=>realizarAtaque(jugador.campo.indexOf(carta));
+            } else {
+                el.onclick = ()=>mostrarModalCarta(carta);
             }
+
             if (["Espadas","Corazones"].includes(carta.palo)) contAtk.appendChild(el);
             else contApoyo.appendChild(el);
         });
@@ -317,6 +319,7 @@ function mostrarCementerio() {
             el.className = "carta";
             el.textContent = `${carta.simbolo} ${carta.valor}`;
             if (carta.efecto) el.title = carta.efecto;
+            el.onclick = ()=>mostrarModalCarta(carta);
             cont.appendChild(el);
         }
     });
@@ -765,10 +768,12 @@ document.getElementById("cementerio1").onclick = ()=>mostrarCementerioModal(juga
 document.getElementById("cementerio2").onclick = ()=>mostrarCementerioModal(jugador2);
 
 function mostrarCementerioModal(jugador) {
-    document.getElementById("cementerio-modal").style.display = "block";
-    document.getElementById("fondo-oscuro").style.display = "block";
-    let lista = document.getElementById("cementerio-lista");
-    lista.innerHTML = "<b>Cementerio:</b><br>" + jugador.cementerio.map(c=>`${c.simbolo} ${c.valor} (${c.palo})`).join("<br>");
+    document.getElementById("modal-carta").style.display = "flex";
+    let lista = jugador.cementerio.map((c, i) =>
+        `<div style="margin:4px 0;cursor:pointer;" onclick="mostrarModalCartaDesdeCementerio(${jugador === jugador1 ? 1 : 2},${i})">${c.simbolo} ${c.valor} <span style="font-size:0.7em;">(${c.palo})</span></div>`
+    ).join("");
+    document.getElementById("modal-carta-contenido").innerHTML =
+        `<b>Cementerio:</b><br>${lista}<br><button onclick="cerrarModalCarta()" style="margin-top:10px;padding:6px 18px;border-radius:8px;background:#00bfff;color:#fff;border:none;">Cerrar</button>`;
 }
 function cerrarCementerio() {
     document.getElementById("cementerio-modal").style.display = "none";
@@ -1254,17 +1259,32 @@ function mostrarModalCarta(carta) {
     document.getElementById("modal-carta").style.display = "flex";
 }
 
-function ajustarPosicionModal(modal) {
-    let pantallaAltura = window.innerHeight;
-    let modalAltura = modal.offsetHeight;
-    let desplazamiento = 20; // Ajuste para centrar mejor
-    if (modalAltura > pantallaAltura - 40) {
-        // Si el modal es más alto que la pantalla, ajustar a la parte superior
-        modal.style.top = "10px";
-    } else {
-        // Centrar verticalmente
-        modal.style.top = `calc(50% - ${modalAltura/2}px - ${desplazamiento}px)`;
+function mostrarModalCartaMano(carta, idx, jugador) {
+    let puedeInvocar = (turno === (jugador === jugador1 ? 1 : 2)) && fase === 1 && !jugador.esIA;
+    let contenido = `<div style="font-size:1.5em;margin-bottom:8px;">${carta.simbolo} ${carta.valor} <span style="font-size:0.7em;">(${carta.palo})</span></div>`;
+    if (carta.efecto && carta.efecto.length > 0) {
+        contenido += `<div style="margin-bottom:8px;">${carta.efecto}</div>`;
     }
+    if (carta.valorOriginal) {
+        contenido += `<div style="color:#ffb347;">Valor original: ${carta.valorOriginal}</div>`;
+    }
+    if (puedeInvocar) {
+        contenido += `<button id="btnInvocarCarta" style="margin-top:10px;padding:6px 18px;border-radius:8px;background:#00bfff;color:#fff;border:none;">Invocar</button>`;
+    }
+    document.getElementById("modal-carta-contenido").innerHTML = contenido;
+    document.getElementById("modal-carta").style.display = "flex";
+    if (puedeInvocar) {
+        document.getElementById("btnInvocarCarta").onclick = () => {
+            cerrarModalCarta();
+            prepararInvocacion(idx);
+        };
+    }
+}
+
+function mostrarModalCartaDesdeCementerio(jugadorNum, idx) {
+    let jugador = jugadorNum === 1 ? jugador1 : jugador2;
+    let carta = jugador.cementerio[idx];
+    mostrarModalCarta(carta);
 }
 
 window.onclick = function(event) {
@@ -1272,5 +1292,42 @@ window.onclick = function(event) {
     if (event.target == modal) {
         modal.style.display = "none";
     }
+}
+
+function prepararSacrificio(valorObjetivo) {
+    mostrarMensaje(`Selecciona cartas de tu campo para sacrificar (sumar ${valorObjetivo}):`);
+    let jugador = getJugadorActual();
+    let seleccionadas = [];
+    let suma = 0;
+
+    // Limpia eventos previos
+    mostrarCampo();
+
+    // Resalta y agrega eventos a cartas del campo
+    jugador.campo.forEach((carta, idx) => {
+        let areaCampo = document.getElementById(turno === 1 ? "campo1-ataque" : "campo2-ataque");
+        let el = areaCampo.childNodes[idx];
+        if (el) {
+            el.classList.add("sacrificio");
+            el.onclick = () => {
+                if (!seleccionadas.includes(idx)) {
+                    seleccionadas.push(idx);
+                    suma += VALOR_NUM(carta.valor);
+                    el.classList.add("seleccionada");
+                } else {
+                    seleccionadas = seleccionadas.filter(i => i !== idx);
+                    suma -= VALOR_NUM(carta.valor);
+                    el.classList.remove("seleccionada");
+                }
+                if (suma === valorObjetivo) {
+                    // Realiza el sacrificio
+                    let sacrificios = seleccionadas.map(i => jugador.campo[i]);
+                    // ...tu lógica de sacrificio aquí...
+                    limpiarResaltados();
+                    actualizarUI();
+                }
+            };
+        }
+    });
 }
 

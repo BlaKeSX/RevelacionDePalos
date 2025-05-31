@@ -116,7 +116,7 @@ h1 {
 }
 
 .carta.seleccionada {
-  border: 2px solid #00ff99;
+  border: 2px solid #00ff99 !important;
   box-shadow: 0 0 10px #00ff99;
 }
 .carta.invocable {
@@ -128,7 +128,9 @@ h1 {
   cursor: pointer;
 }
 .carta.sacrificio {
-  border: 2px solid #ff4444;
+  border: 2px solid #ff4444 !important;
+  box-shadow: 0 0 10px #ff4444;
+  cursor: pointer;
 }
 .carta.atacando {
   background: #e0f7fa;
@@ -241,53 +243,61 @@ button:disabled {
     min-height: 100%;
     padding: 0;
     margin: 0;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: hidden;
     background: #181c22;
   }
   body {
     height: 100vh;
     min-height: 100vh;
     max-height: 100vh;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: hidden;
   }
   .game-container {
-    flex-direction: column-reverse; /* Jugador 1 abajo */
+    flex-direction: column-reverse;
     align-items: stretch;
     gap: 0;
     height: 100vh;
     min-height: 100vh;
     max-height: 100vh;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin: 0 !important;
+    padding: 0 !important;
     overflow: hidden;
     background: #23272f;
-    border-radius: 0 0 14px 14px;
-    box-shadow: 0 2px 16px #0008;
+    border-radius: 0;
+    box-shadow: none;
   }
-  .player {
-    border-bottom: 1px solid #222c;
-    border-top: none;
-    padding: 4px 0 4px 0;
+  .player, .acciones {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    min-width: unset;
+    box-sizing: border-box;
     min-height: 0;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
     background: #23272f;
+    box-shadow: none;
   }
-  .player:first-child {
+  .player {
+    border-bottom: 1px solid #222c;
     border-top: none;
-    padding-top: 0;
   }
   .acciones {
     background: #1b2027;
     border-bottom: 1px solid #222c;
     border-top: 1px solid #222c;
-    box-shadow: 0 2px 8px #0004;
-    padding: 18px 0 18px 0;
-    min-height: 120px;
-    max-height: 220px;
+    box-shadow: none;
+    padding: 10px 0 10px 0 !important;
+    min-height: 80px;
+    max-height: 140px;
     justify-content: center;
-    flex: none;      /* El centro NO ocupa el espacio sobrante */
+    flex: none;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -381,6 +391,59 @@ button:disabled {
     border-radius: 8px;
     box-shadow: 0 1px 4px #0004;
   }
+  .game-container {
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+  }
+  .player {
+    padding-bottom: 2px !important;
+    margin-bottom: 0 !important;
+  }
+  .mano {
+    margin-bottom: 0 !important;
+  }
+  .player .campo-row,
+.player .cementerio {
+  margin-bottom: 6px;
+}
+.player h2, .player .info-jugador {
+  margin-top: 6px;
+}
+#player2 {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: 0;
+    max-height: 45vh; /* Ajusta este valor para que el campo llegue solo hasta la mitad */
+    height: 45vh;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+  #player2 .mano {
+    margin-top: 0;
+    margin-bottom: 4px;
+    justify-content: center;
+  }
+  #player2 .fila-campo,
+  #player2 .campo-row {
+    margin-bottom: 2px;
+    justify-content: center;
+  }
+  #player2 .fila-campo-ataque {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+  #player2 .cementerio {
+    margin-left: 8px;
+    margin-right: 0;
+    align-self: flex-end;
+  }
+  #player2 .info-jugador2 {
+    margin-top: 6px;
+    text-align: center;
+  }
 }
 
 @media (max-width: 500px) {
@@ -400,5 +463,38 @@ button:disabled {
   button {
     font-size: 0.9em;
     padding: 2px 6px;
+  }
+}
+
+@media (max-width: 800px) {
+  #player2 {
+    max-height: 32vh; /* Ajusta este valor para que llegue justo a la línea roja */
+    height: 32vh;
+    min-height: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+  #player1 {
+    max-height: 34vh; /* Ajusta este valor para que llegue justo a la línea azul */
+    height: 34vh;
+    min-height: 0;
+    padding-top: 0;
+    margin-top: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  #player1 .mano {
+    margin-top: 2px !important;
+    margin-bottom: 0 !important;
+    justify-content: center;
+    /* Sube la mano lo más arriba posible */
+  }
+  #player1 .zona-jugador {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  #player1 .fila-campo {
+    margin-bottom: 2px !important;
   }
 }

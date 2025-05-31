@@ -33,20 +33,25 @@
             <div id="sacrificioArea"></div>
             <div id="mensaje"></div>
         </div>
-        <div class="player" id="player2"> <!-- Jugador 2 a la derecha -->
-            <h2>Jugador 2</h2>
-            <p>Vida: <span id="vida2">20</span></p>
-            <p>Cartas en baraja: <span id="baraja2Count">52</span></p>
+        <!-- Jugador 2 -->
+        <div class="player" id="player2">
             <div id="zona-jugador2" class="zona-jugador">
+                <!-- Mano arriba, pegada al borde -->
+                <div id="mano2" class="mano"></div>
+                <!-- Apoyo/magia debajo de la mano -->
                 <div class="fila-campo">
-                    <div id="cementerio2" class="cementerio clickable"></div>
-                    <div id="campo2-ataque" class="campo-row"></div>
-                </div>
-                <div class="fila-campo">
-                    <div style="width:60px"></div>
                     <div id="campo2-apoyo" class="campo-row"></div>
                 </div>
-                <div id="mano2" class="mano"></div>
+                <!-- Ataque/defensa debajo de apoyo, cementerio a la derecha -->
+                <div class="fila-campo fila-campo-ataque">
+                    <div id="campo2-ataque" class="campo-row"></div>
+                    <div id="cementerio2" class="cementerio clickable"></div>
+                </div>
+            </div>
+            <div class="info-jugador2">
+                <h2>Jugador 2</h2>
+                <p>Vida: <span id="vida2">20</span></p>
+                <p>Cartas en baraja: <span id="baraja2Count">52</span></p>
             </div>
         </div>
     </div>
